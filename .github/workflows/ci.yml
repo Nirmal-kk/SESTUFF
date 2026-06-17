@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ main, master ]
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   test-and-build:
     name: Backend Test & Docker Build Verification
@@ -32,19 +36,39 @@ jobs:
           cd backend
           npm test
 
+      - name: Log in to the Container registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Lowercase Repository Owner
+        id: repo_owner
+        run: |
+          echo "owner_lowercase=${OWNER,,}" >> ${GITHUB_OUTPUT}
+        env:
+          OWNER: '${{ github.repository_owner }}'
+
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Verify Backend Docker Build
+      - name: Build and Push Backend Docker Image
         uses: docker/build-push-action@v5
         with:
           context: ./backend
-          push: false
-          tags: luxestay-backend:test
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: |
+            ghcr.io/${{ steps.repo_owner.outputs.owner_lowercase }}/luxestay-backend:latest
+            ghcr.io/${{ steps.repo_owner.outputs.owner_lowercase }}/luxestay-backend:${{ github.sha }}
 
-      - name: Verify Frontend Docker Build
+      - name: Build and Push Frontend Docker Image
         uses: docker/build-push-action@v5
         with:
           context: ./frontend
-          push: false
-          tags: luxestay-frontend:test
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: |
+            ghcr.io/${{ steps.repo_owner.outputs.owner_lowercase }}/luxestay-frontend:latest
+            ghcr.io/${{ steps.repo_owner.outputs.owner_lowercase }}/luxestay-frontend:${{ github.sha }}
+
