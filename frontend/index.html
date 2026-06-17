@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuxeStay | Premium Hotel & stay Bookings</title>
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Premium glowing background ambient accents -->
+    <div class="glow-accent glow-primary"></div>
+    <div class="glow-accent glow-secondary"></div>
+
+    <div class="container">
+        <!-- Navigation Header -->
+        <header class="app-header">
+            <div class="logo-area">
+                <i class="fa-solid fa-hotel logo-icon"></i>
+                <div class="logo-info">
+                    <h1>LuxeStay</h1>
+                    <span>Bespoke Hotels & Escapes</span>
+                </div>
+            </div>
+            <div class="api-badge" id="api-status-badge">
+                <span class="badge-dot"></span>
+                <span class="badge-text" id="api-status-text">Connecting...</span>
+            </div>
+        </header>
+
+        <!-- Main Dashboard Workspace -->
+        <main class="dashboard">
+            <!-- Stays Listings Gallery Section -->
+            <section class="section listings-section">
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-compass"></i> Explore Premium Stays</h2>
+                    <p>Curated destinations offering unparalleled luxury and experiences</p>
+                </div>
+                <div id="listings-grid" class="listings-grid">
+                    <!-- Dynamic rendering of listing cards -->
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                </div>
+            </section>
+
+            <!-- Bookings Management Section -->
+            <section class="section bookings-section">
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-calendar-check"></i> Your Active Bookings</h2>
+                    <p>Manage and monitor your upcoming luxury retreats</p>
+                </div>
+                <div class="bookings-card-container">
+                    <div id="no-bookings" class="no-bookings-placeholder hidden">
+                        <i class="fa-solid fa-suitcase"></i>
+                        <h3>No active bookings</h3>
+                        <p>Find your next escape from our listings above.</p>
+                    </div>
+                    <div id="bookings-list" class="bookings-list">
+                        <!-- Dynamic rendering of bookings -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Booking Interactive Modal -->
+    <div id="booking-modal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-file-invoice-dollar"></i> Request Booking</h3>
+                <button id="close-modal-btn" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="listing-summary-box">
+                    <img id="modal-listing-img" src="" alt="Selected Stay">
+                    <div class="listing-summary-text">
+                        <h4 id="modal-listing-title">Stay Title</h4>
+                        <p id="modal-listing-location"><i class="fa-solid fa-location-dot"></i> Stay Location</p>
+                        <span class="price-rate"><strong id="modal-listing-price">$0</strong> / night</span>
+                    </div>
+                </div>
+                
+                <form id="booking-form" class="booking-form" novalidate>
+                    <input type="hidden" id="booking-listing-id">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="guest-name">Full Name</label>
+                            <div class="input-container">
+                                <i class="fa-solid fa-user"></i>
+                                <input type="text" id="guest-name" placeholder="E.g. John Doe" required>
+                            </div>
+                            <span class="error-text" id="name-error"></span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="guest-email">Email Address</label>
+                            <div class="input-container">
+                                <i class="fa-solid fa-envelope"></i>
+                                <input type="email" id="guest-email" placeholder="john@example.com" required>
+                            </div>
+                            <span class="error-text" id="email-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="check-in-date">Check-In Date</label>
+                            <div class="input-container">
+                                <i class="fa-solid fa-calendar-plus"></i>
+                                <input type="date" id="check-in-date" required>
+                            </div>
+                            <span class="error-text" id="checkin-error"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="check-out-date">Check-Out Date</label>
+                            <div class="input-container">
+                                <i class="fa-solid fa-calendar-minus"></i>
+                                <input type="date" id="check-out-date" required>
+                            </div>
+                            <span class="error-text" id="checkout-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="booking-cost-preview">
+                        <div class="cost-line">
+                            <span>Nights:</span>
+                            <span id="cost-nights">0 nights</span>
+                        </div>
+                        <div class="cost-line divider">
+                            <span>Base Rate:</span>
+                            <span id="cost-base-rate">$0 / night</span>
+                        </div>
+                        <div class="cost-line total">
+                            <span>Estimated Total:</span>
+                            <span id="cost-total">$0</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-booking-btn">
+                        <i class="fa-solid fa-passport"></i> Confirm Reservation
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Toast Notifications Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
